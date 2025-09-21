@@ -1,0 +1,118 @@
+.chat-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Левая панель пользователей */
+.chat-users {
+    width: 250px;
+    border-right: 1px solid #ddd;
+    padding: 1rem;
+    background: #f9f9f9;
+    overflow-y: auto;
+}
+
+.chat-users ul {
+    list-style: none;
+    padding: 0;
+}
+
+.chat-users li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.chat-users img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+/* Основная панель чата */
+.chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.chat-message {
+    margin-bottom: 0.5rem;
+    word-break: break-word;
+}
+
+.chat-input {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.chat-input button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.emoji-picker {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    z-index: 10;
+}
+
+/* 📱 Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .chat-container {
+        flex-direction: column;
+    }
+
+    .chat-users {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+        padding: 0.5rem;
+    }
+
+    .chat-main {
+        padding: 0.5rem;
+    }
+
+    .chat-input {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .chat-input input {
+        width: 100%;
+    }
+
+    .chat-input button {
+        width: 100%;
+    }
+
+    .emoji-picker {
+        bottom: 120px;
+        right: 10px;
+        width: 90%;
+    }
+}
