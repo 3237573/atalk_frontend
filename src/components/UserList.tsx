@@ -52,7 +52,7 @@ export default function UserList({ currentUserId, onSelect }: UserListProps) {
         }
 
         fetchOnline()
-        const interval = setInterval(fetchOnline, 5000)
+        const interval = setInterval(fetchOnline, 30000)
         return () => clearInterval(interval)
     }, [])
 

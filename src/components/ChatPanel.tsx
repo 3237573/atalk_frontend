@@ -76,17 +76,24 @@ export default function ChatPanel({ currentUserId, receiverId }: ChatPanelProps)
     }, [receiverId, token])
 
     const sendMessage = () => {
+        console.log('📤 sendMessage вызван')
         if (!input.trim() || !socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) return
+        console.log('WebSocket статус:', socketRef.current?.readyState)
 
         const payload = {
             receiverId,
             roomId: null,
             content: input,
-            encrypted: false,
-            type: 'TEXT' as const
+            nonce: '', // если нет шифрования
+            senderPublicKey: '', // если нет шифрования
+            replyToMessageId: null,
+            metadata: {}, // или null
+            type: 'TEXT',
+            encrypted: false
         }
 
         socketRef.current.send(JSON.stringify(payload))
+        console.log('📤 Отправлено:', payload)
 
         setMessages(prev => [
             ...prev,

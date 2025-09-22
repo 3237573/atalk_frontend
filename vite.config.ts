@@ -6,7 +6,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/chat': 'http://localhost:8080'
+      '/chat': 'http://localhost:8080',
+      '/auth': 'http://localhost:8080',
+      '/call': 'http://localhost:8080'
     }
   }
 })
