@@ -12,8 +12,12 @@ export default function ChatWithCall({ currentUserId }: { currentUserId: string 
         <div className="chat-call-container">
             <UserList currentUserId={currentUserId} onSelect={setSelectedUserId} />
 
-            {selectedUserId && (
-                <ChatPanel currentUserId={currentUserId} receiverId={selectedUserId} />
+            {selectedUserId && !isCallActive &&(
+                <ChatPanel
+                    currentUserId={currentUserId}
+                    receiverId={selectedUserId}
+                    onClose={() => setSelectedUserId(null)}
+                />
             )}
 
             {isCallActive && peerId && (

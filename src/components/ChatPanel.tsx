@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import {useEffect, useRef, useState} from 'react'
 import EmojiPicker from 'emoji-picker-react'
 import './ChatPanel.css'
-import { useCall } from '../hooks/useCall'
 import {useAuth} from "../hooks/useAuth.ts";
 
 type Message = {
@@ -16,14 +15,15 @@ type Message = {
 type ChatPanelProps = Readonly<{
     currentUserId: string
     receiverId: string
+    onClose: () => void
 }>
 
-export default function ChatPanel({ currentUserId, receiverId }: ChatPanelProps) {
+export default function ChatPanel(
+    {currentUserId, receiverId, onClose}: ChatPanelProps) {
     const [messages, setMessages] = useState<Message[]>([])
     const [input, setInput] = useState('')
     const [showEmoji, setShowEmoji] = useState(false)
-    const { startCall } = useCall()
-    const { token } = useAuth()
+    const {token} = useAuth()
     const socketRef = useRef<WebSocket | null>(null)
 
     // Подключение к WebSocket
@@ -76,17 +76,24 @@ export default function ChatPanel({ currentUserId, receiverId }: ChatPanelProps)
     }, [receiverId, token])
 
     const sendMessage = () => {
+        console.log('📤 sendMessage вызван')
         if (!input.trim() || !socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) return
+        console.log('WebSocket статус:', socketRef.current?.readyState)
 
         const payload = {
             receiverId,
             roomId: null,
             content: input,
-            encrypted: false,
-            type: 'TEXT' as const
+            nonce: '', // если нет шифрования
+            senderPublicKey: '', // если нет шифрования
+            replyToMessageId: null,
+            metadata: {}, // или null
+            type: 'TEXT',
+            encrypted: false
         }
 
         socketRef.current.send(JSON.stringify(payload))
+        console.log('📤 Отправлено:', payload)
 
         setMessages(prev => [
             ...prev,
@@ -108,20 +115,22 @@ export default function ChatPanel({ currentUserId, receiverId }: ChatPanelProps)
 
     return (
         <div className="chat-main">
+            <div className="chat-header">
+                <button onClick={onClose} className="chat-close-button">❌ Закрыть чат</button>
+            </div>
             <div className="chat-input">
                 <input
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     placeholder="Введите сообщение..."
                 />
-                <button onClick={sendMessage}>📤</button>
+                <button onClick={sendMessage}>📤 Отправить</button>
                 <button onClick={() => setShowEmoji(!showEmoji)}>😊</button>
-                <button onClick={() => startCall(receiverId)}>📞 Позвонить</button>
             </div>
 
             {showEmoji && (
                 <div className="emoji-picker">
-                    <EmojiPicker onEmojiClick={handleEmojiClick} />
+                    <EmojiPicker onEmojiClick={handleEmojiClick}/>
                 </div>
             )}
 

@@ -11,6 +11,7 @@ type JwtPayload = {
 }
 
 export default function ChatPage() {
+    console.log("ChatPage starting")
     const navigate = useNavigate()
     const { token, isAuthenticated, isReady } = useAuth()
     const [currentUserId, setCurrentUserId] = useState<string | null>(null)

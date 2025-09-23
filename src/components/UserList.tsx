@@ -45,14 +45,14 @@ export default function UserList({ currentUserId, onSelect }: UserListProps) {
 
     useEffect(() => {
         const fetchOnline = () => {
-            fetch('/chat/online')
+            fetch('/call/online')
                 .then(res => res.json())
                 .then(setOnlineUsers)
                 .catch(err => console.error('Ошибка загрузки онлайн-статуса:', err))
         }
 
         fetchOnline()
-        const interval = setInterval(fetchOnline, 5000)
+        const interval = setInterval(fetchOnline, 30000)
         return () => clearInterval(interval)
     }, [])
 
