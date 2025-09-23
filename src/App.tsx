@@ -1,13 +1,14 @@
 // src/App.tsx
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom'
-import { AuthProvider } from './context/AuthProvider'
-import { CallProvider } from './context/CallContext'
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
+import {AuthProvider} from './context/AuthProvider'
+import {CallProvider} from './context/CallContext'
 import PrivateRoute from './routes/PrivateRoute'
 import TaskPage from './pages/TaskPage'
 import FinancePage from './pages/FinancePage'
 import ChatPage from './pages/ChatPage'
 import LoginPage from './pages/LoginPage'
 import MainLayout from './layout/MainLayout'
+import FallbackRedirect from "./components/FallbackRedirect.tsx";
 
 export default function App() {
     return (
@@ -21,7 +22,7 @@ export default function App() {
                             <Route path="/tasks" element={<TaskPage />} />
                             <Route path="/finance" element={<FinancePage />} />
                         </Route>
-                        <Route path="*" element={<Navigate to="/login" replace />} />
+                        <Route path="*" element={<FallbackRedirect />} />
                     </Routes>
                 </Router>
             </CallProvider>

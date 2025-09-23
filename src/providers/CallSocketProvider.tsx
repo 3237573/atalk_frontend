@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { jwtDecode } from 'jwt-decode'
+import { useCall } from '../context/CallContext'
 
 type SignalMessage = {
-    type: 'offer' | 'answer' | 'ice'
+    type: 'offer' | 'answer' | 'ice' | 'end'
     offer?: RTCSessionDescriptionInit
     answer?: RTCSessionDescriptionInit
     candidate?: RTCIceCandidateInit
@@ -10,9 +10,9 @@ type SignalMessage = {
     from: string
 }
 
-type JwtPayload = { userId: string }
+export default function CallSocketProvider() {
+    const { receiveOffer, endCall } = useCall()
 
-export default function CallSocketProvider({ onSignal }: { onSignal: (msg: SignalMessage) => void }) {
     useEffect(() => {
         const token = localStorage.getItem('jwt')
         if (!token || token.length < 20) return
@@ -23,7 +23,14 @@ export default function CallSocketProvider({ onSignal }: { onSignal: (msg: Signa
         ws.onmessage = event => {
             try {
                 const data: SignalMessage = JSON.parse(event.data)
-                onSignal(data)
+                if (data.type === 'offer') {
+                    console.log('📨 Входящий offer:', data)
+                    receiveOffer(data)
+                }
+                if (data.type === 'end') {
+                    console.log('🔚 Получен сигнал завершения от', data.from)
+                    endCall()
+                }
             } catch (err) {
                 console.warn('⚠️ Ошибка парсинга сигнала:', err)
             }
@@ -31,7 +38,7 @@ export default function CallSocketProvider({ onSignal }: { onSignal: (msg: Signa
         ws.onclose = () => console.log('📴 Call WebSocket закрыт')
 
         return () => ws.close()
-    }, [onSignal])
+    }, [receiveOffer])
 
     return null
 }

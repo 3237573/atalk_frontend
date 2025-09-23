@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { jwtDecode } from 'jwt-decode'
-import { useCall } from '../hooks/useCall'
+import { useCall } from '../context/CallContext'
+import {useAuth} from "../hooks/useAuth.ts";
 
 type SignalMessage = {
-    type: 'offer' | 'answer' | 'ice'
+    type: 'offer' | 'answer' | 'ice' | 'end'
     offer?: RTCSessionDescriptionInit
     answer?: RTCSessionDescriptionInit
     candidate?: RTCIceCandidateInit
@@ -17,9 +18,10 @@ export default function VoiceCall({ peerId }: { peerId: string }) {
     const socket = useRef<WebSocket | null>(null)
     const peer = useRef<RTCPeerConnection | null>(null)
     const localStream = useRef<MediaStream | null>(null)
-    const { endCall } = useCall()
 
-    const token = localStorage.getItem('jwt')
+    const { endCall, isIncoming, incomingOffer } = useCall()
+
+    const {token} = useAuth()
     const currentUserId = token ? jwtDecode<JwtPayload>(token).userId : ''
 
     useEffect(() => {
@@ -66,11 +68,18 @@ export default function VoiceCall({ peerId }: { peerId: string }) {
                             from: currentUserId
                         }))
                         break
+
                     case 'answer':
                         await peer.current.setRemoteDescription(new RTCSessionDescription(data.answer!))
                         break
+
                     case 'ice':
                         await peer.current.addIceCandidate(new RTCIceCandidate(data.candidate!))
+                        break
+
+                    case 'end':
+                        console.log('🔚 Получен сигнал завершения от', data.from)
+                        endCall()
                         break
                 }
             } catch (err) {
@@ -79,7 +88,7 @@ export default function VoiceCall({ peerId }: { peerId: string }) {
         }
 
         socket.current.onopen = async () => {
-            if (peerId !== currentUserId) {
+            if (!isIncoming && peerId !== currentUserId) {
                 const offer = await peer.current!.createOffer()
                 await peer.current!.setLocalDescription(offer)
                 socket.current!.send(JSON.stringify({
@@ -99,12 +108,17 @@ export default function VoiceCall({ peerId }: { peerId: string }) {
             peer.current?.close()
             localStream.current?.getTracks().forEach(track => track.stop())
         }
-    }, [peerId])
+    }, [peerId, isIncoming, incomingOffer])
 
     const endCallHandler = () => {
         localStream.current?.getTracks().forEach(track => track.stop())
         peer.current?.close()
         peer.current = null
+        socket.current?.send(JSON.stringify({
+            type: 'end',
+            to: peerId!,
+            from: currentUserId
+        }))
         socket.current?.close()
         socket.current = null
         endCall()
