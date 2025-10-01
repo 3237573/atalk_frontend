@@ -32,7 +32,7 @@ export default function UserList({ currentUserId, onSelect }: UserListProps) {
     useEffect(() => {
         if (!token) return
 
-        fetch('/chat/users', {
+        fetch('/api/chat/users', {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -45,14 +45,14 @@ export default function UserList({ currentUserId, onSelect }: UserListProps) {
 
     useEffect(() => {
         const fetchOnline = () => {
-            fetch('/call/online')
+            fetch('/api/call/online')
                 .then(res => res.json())
                 .then(setOnlineUsers)
                 .catch(err => console.error('Ошибка загрузки онлайн-статуса:', err))
         }
 
         fetchOnline()
-        const interval = setInterval(fetchOnline, 30000)
+        const interval = setInterval(fetchOnline, 5000)
         return () => clearInterval(interval)
     }, [])
 

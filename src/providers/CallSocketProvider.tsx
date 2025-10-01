@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useCall } from '../context/CallContext'
+import {BACKEND_WS} from "../../config.ts";
 
 type SignalMessage = {
     type: 'offer' | 'answer' | 'ice' | 'end'
@@ -17,7 +18,7 @@ export default function CallSocketProvider() {
         const token = localStorage.getItem('jwt')
         if (!token || token.length < 20) return
 
-        const ws = new WebSocket(`ws://localhost:8080/call/ws?token=${token}`)
+        const ws = new WebSocket(`${BACKEND_WS}/call/ws?token=${token}`)
 
         ws.onopen = () => console.log('📞 Call WebSocket открыт')
         ws.onmessage = event => {

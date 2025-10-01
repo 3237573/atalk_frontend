@@ -1,0 +1,19 @@
+# IDE
+.idea/
+*.iml
+
+# Сборка
+node_modules/
+dist/
+.vite/
+
+# Логи
+*.log
+
+# Git
+.git/
+.gitignore
+
+# Секреты
+.env
+.env.local

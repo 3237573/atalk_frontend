@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from 'react'
 import EmojiPicker from 'emoji-picker-react'
 import './ChatPanel.css'
 import {useAuth} from "../hooks/useAuth.ts";
+import {BACKEND_WS} from "../../config.ts";
 
 type Message = {
     id: string
@@ -30,7 +31,7 @@ export default function ChatPanel(
     useEffect(() => {
         if (!token) return
 
-        const ws = new WebSocket(`ws://localhost:8080/chat?token=${token}`)
+        const ws = new WebSocket(`${BACKEND_WS}/chat?token=${token}`)
 
         ws.onopen = () => {
             console.log('✅ Chat WebSocket открыт')
@@ -65,7 +66,7 @@ export default function ChatPanel(
     useEffect(() => {
         if (!token) return
 
-        fetch(`/chat/history/${receiverId}`, {
+        fetch(`/api/chat/history/${receiverId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

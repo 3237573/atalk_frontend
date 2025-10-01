@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { jwtDecode } from 'jwt-decode'
 import { useCall } from '../context/CallContext'
 import {useAuth} from "../hooks/useAuth.ts";
+import {BACKEND_WS} from "../../config.ts";
 
 type SignalMessage = {
     type: 'offer' | 'answer' | 'ice' | 'end'
@@ -25,7 +26,7 @@ export default function VoiceCall({ peerId }: { peerId: string }) {
     const currentUserId = token ? jwtDecode<JwtPayload>(token).userId : ''
 
     useEffect(() => {
-        socket.current = new WebSocket(`ws://localhost:8080/call/ws?token=${token}`)
+        socket.current = new WebSocket(`${BACKEND_WS}/call/ws?token=${token}`)
         peer.current = new RTCPeerConnection()
 
         navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {

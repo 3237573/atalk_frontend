@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import {BACKEND_WS} from "../../config.ts";
 
 type WebSocketType = 'chat' | 'call' | 'notify'
 
@@ -24,9 +25,9 @@ export function useWebSocketManager(type: WebSocketType, handlers: EventHandler)
         }
 
         const endpoint = {
-            chat: `ws://localhost:8080/chat?token=${token}`,
-            call: `ws://localhost:8080/call/ws?token=${token}`,
-            notify: `ws://localhost:8080/notify/ws?token=${token}`
+            chat: `${BACKEND_WS}/chat?token=${token}`,
+            call: `${BACKEND_WS}/call/ws?token=${token}`,
+            notify: `${BACKEND_WS}/notify/ws?token=${token}`
         }[type]
 
         const connect = () => {
